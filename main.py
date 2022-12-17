@@ -6,7 +6,7 @@ path_to_grammar = os.path.join(os.getcwd(), 'grammarInput.txt')
 
 grammar = read_grammar_from_file(path_to_grammar)
 print(grammar)
-f = open('D:\\FACULTATE-AN3-SEM1\\LFTC\\LABS\\Lab5-peEchipe\\secventa.in', 'r')
+f = open('C:\\Users\\Horia\\PycharmProjects\\LFTC-TeamProject\\LFTC-team\\secventa.in', 'r')
 input = f.readline().strip().split(" ")
 print(input)
 recursive_descent(grammar, input)
