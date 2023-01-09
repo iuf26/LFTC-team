@@ -14,6 +14,7 @@ def get_next_prod(prod, prods):
 
 
 def recursive_descent(grammar, sequence):
+    sequence_copy = sequence
     config = Config(grammar.get_start_symbol())
     while config.state != State.FINAL and config.state != State.ERROR:
         print(config)
@@ -30,7 +31,7 @@ def recursive_descent(grammar, sequence):
                     config.work_stack.append((first_prod.get_left_term(), first_prod.get_right_term()))
                     config.input_stack = first_prod.get_right_term() + config.input_stack[1:]
                 else:
-                    if config.index == len(sequence):
+                    if config.index == len(sequence):#am ajuns cu index-ul la capatul secventei
                         config.state = State.BACK
                     elif config.input_stack[0] == 'e':
                         config.work_stack.append('e')
@@ -47,22 +48,24 @@ def recursive_descent(grammar, sequence):
                 if config.work_stack[-1] in grammar.get_terminals():
                     if config.work_stack[-1] == 'e':
                         config.work_stack.pop(-1)
-                    else:
+                    else:#REVENIRE
                         config.index -= 1
                         terminal = config.work_stack.pop(-1)
                         config.input_stack = [terminal] + config.input_stack
                 else:
+                    #ALTA incercare
                     last_production = config.work_stack[-1]
                     productions = grammar.get_productions_of(last_production[0])
                     productions = [(prod.get_left_term(), prod.get_right_term()) for prod in productions]
                     next_prod = get_next_prod(last_production, productions)
+                    # se incearca gasirea lui AJ+1(vezi teoria)
                     if next_prod:
                         config.state = State.NORMAL
                         config.work_stack.pop(-1)
                         config.work_stack.append((next_prod[0], next_prod[1]))
                         config.input_stack = config.input_stack[len(last_production[1]):]
                         config.input_stack = next_prod[1] + config.input_stack
-                    elif config.index == 0 and last_production[0] == grammar.get_start_symbol():
+                    elif config.index == 0 and last_production[0] == grammar.get_start_symbol():# am ajuns de unde am pornit si tot nu am reusit sa demonstram ca secventa este acceptata de gramatica
                         config.state = State.ERROR
                     else:
                         config.work_stack.pop(-1)
@@ -74,7 +77,7 @@ def recursive_descent(grammar, sequence):
         print("***********************************")
     prod_rules = []
     if config.state == State.ERROR:
-        raise ValueError()
+        raise ValueError("Sequence " + str(sequence_copy) + " is not accepted by grammar")
         return False, []
     else:
         for prod in config.work_stack:
